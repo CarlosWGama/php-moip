@@ -1,6 +1,7 @@
 {
     "name": "carloswgama/php-moip",
     "description": "Biblioteca para realizar compras no MoIP com e sem checkout transparente",
+    "license": "MIT",
     "authors": [
         {
             "name": "Carlos W. Gama",
