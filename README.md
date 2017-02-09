@@ -11,11 +11,12 @@ Moip V2 - Atual e ainda em Beta
 Moip V1 - Antigo, funcional e o mais usado ainda nos projetos.
 
 Os links para acessos são:
-[Moip V2 - Produção](https://conta.moip.com.br/)
-[Moip V2 - Sandbox](https://conta-sandbox.moip.com.br/)
 
-[Moip V1 - Produção](https://www.moip.com.br/MainMenu.do?method=login)
-[Moip V1 - Sandbox](https://desenvolvedor.moip.com.br/sandbox/MainMenu.do?method=home)
+![Moip V2 - Produção](https://conta.moip.com.br/)
+![Moip V2 - Sandbox](https://conta-sandbox.moip.com.br/)
+
+![Moip V1 - Produção](https://www.moip.com.br/MainMenu.do?method=login)
+![Moip V1 - Sandbox](https://desenvolvedor.moip.com.br/sandbox/MainMenu.do?method=home)
 
 O ambiente V2 ainda estão em desenvolvimento, por isso alguns recursos podem apresentar falhas ou não estar disponíveis ainda, mas todos recursos que formos usar no V2, também está disponível e 100% funcional no V1.
 
@@ -26,12 +27,12 @@ O ambiente V2 ainda estão em desenvolvimento, por isso alguns recursos podem ap
 O primeiro passo é logar na conta do MoiP. 
 
 ### MoIP V2
-Após logar, ir na opção [Minha Conta >> Configurações >> Chaves de Acesso](https://conta-sandbox.moip.com.br/configurations/api_credentials) e buscar o Token e a Chave (key):
+Após logar, ir na opção ![Minha Conta >> Configurações >> Chaves de Acesso](https://conta-sandbox.moip.com.br/configurations/api_credentials) e buscar o Token e a Chave (key):
 
 ![Chaves de Acesso no V2](http://carloswgama.com.br/moip/tutorial/moip_v2_chaves.jpg)
 
 ### MoIP V1
-Após logar, ir na opção [Ferramentas >> API MoIP >> Chaves de Acesso](https://desenvolvedor.moip.com.br/sandbox/AdmAPI.do?method=keys) e buscar o Token e a Chave (key):
+Após logar, ir na opção ![Ferramentas >> API MoIP >> Chaves de Acesso](https://desenvolvedor.moip.com.br/sandbox/AdmAPI.do?method=keys) e buscar o Token e a Chave (key):
 
 ![Chaves de Acesso no V1](http://carloswgama.com.br/moip/tutorial/moip_v1_chaves.jpg)
 
@@ -45,7 +46,7 @@ Ir na opção [Minha Conta >> Configurações >> Notificações](https://conta-s
 ![Chaves de Acesso no V2](http://carloswgama.com.br/moip/tutorial/moip_v2_url_notificacao.jpg)
 
 ### MoIP V1
-Ir na opção [Meus Dados >> Preferências >> Notificação de Transações](https://desenvolvedor.moip.com.br/sandbox/AdmMainMenuMyData.do?method=transactionnotification) e inserir o link para onde as notificações serão enviadas 
+Ir na opção ![Meus Dados >> Preferências >> Notificação de Transações](https://desenvolvedor.moip.com.br/sandbox/AdmMainMenuMyData.do?method=transactionnotification) e inserir o link para onde as notificações serão enviadas 
 
 ![Chaves de Acesso no V2](http://carloswgama.com.br/moip/tutorial/moip_v1_url_notificacao.jpg)
 
@@ -233,7 +234,7 @@ $instituicoesDebito = $moipPag->getInstituicoesDebito();
 
 Para realizar o pagamento por cartão de crédito com checkout transparente o processo é semelhante aos demais, porém para iniciar o pagamento usamos a função javascript **MoipPagarCartao()**
 
-Essa função irá buscar por 6 campos que deverão estar com os seguintes id's:
+Essa função irá buscar por 8 campos que deverão estar com os seguintes id's:
 - **moip_cartao_titular_nome** => Nome do títular do cartão igual a como está no cartão
 - **moip_cartao_titular_nascimento** => Data de nascimento do títular do Cartão (DD/MM/YYYY)
 - **moip_cartao_titular_telefone** => Telefone do Títular do Cartão. Ex: (99)99999-9999
@@ -394,7 +395,7 @@ $scripts = $moipPag->setID(uniqid())   //ID unico para identificar a compra
 <button onclick="MoipPagarDebitoBancarioPersonalizado();">Pagar com Debito Bancário</button>
 ```
 *Para mais informações de como criar seu próprio javascript, pode olhar a documentação do MoIP de Pagamentos via JavaScripts*
-[Javascript de Pagamento MOIP](https://labs.moip.com.br/referencia/javascript_de_pagamento/)
+![Javascript de Pagamento MOIP](https://labs.moip.com.br/referencia/javascript_de_pagamento/)
 
 ---
 # NASP
@@ -447,9 +448,9 @@ Formata todo o post enviado documentando os códigos enviados como nos método a
 ---
 *Links extras:*
 
-[Documentação Oficial do Moip V1](https://labs.moip.com.br/integracao/visao-geral/)
-[Conta do Moip V1](https://www.moip.com.br/MainMenu.do?method=login)
-[Conta Sandbox do Moip V1](https://desenvolvedor.moip.com.br/sandbox/MainMenu.do?method=home)
+![Documentação Oficial do Moip V1](https://labs.moip.com.br/integracao/visao-geral/)
+![Conta do Moip V1](https://www.moip.com.br/MainMenu.do?method=login)
+![Conta Sandbox do Moip V1](https://desenvolvedor.moip.com.br/sandbox/MainMenu.do?method=home)
 
 ---
 **Autor:**  Carlos W. Gama *(carloswgama@gmail.com)*
