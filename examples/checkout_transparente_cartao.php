@@ -10,10 +10,11 @@ $sandbox = true;
 $moipPag = new MoipPagamento($token, $key, $sandbox);
 
 $scripts = $moipPag->setID(uniqid())   //ID unico para identificar a compra
-                        ->setPreco(10.00)   //Preço da compra
-                        ->setDescricao('Descrição da Compra')
-                        ->addFormaPagamento(MoipPagamento::CHECKOUT_CARTAO) //Libera forma de pagamento por cartão
-                        ->getCheckoutTransparente();
+                    ->addProduto('Caderno', 20) //Produto do vendedor principal
+                    ->addProduto('Storage 500GB', 300.00, 'informatica@gmail.com') //produto de 'informatica@gmail.com'
+                    ->setComissaoVendedorPrincipal(10) //(Opcional) 10% dos outros vendedores será dado ao vendedor principal
+                    ->addFormaPagamento(MoipPagamento::CHECKOUT_CARTAO) //Libera forma de pagamento por cartão
+                    ->getCheckoutTransparente();
 
 ?>
 <?php echo $scripts['default'] ?>
