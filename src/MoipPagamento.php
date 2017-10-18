@@ -6,7 +6,7 @@ require_once(dirname(__FILE__).'/lib/Moip.php');
 
 /**
 * @author Carlos W. Gama
-* @version 1.0.0
+* @version 1.1.0
 * @license https://opensource.org/licenses/MIT MIT
 * @see https://github.com/CarlosWGama/php-moip
 */
@@ -73,6 +73,26 @@ class MoipPagamento {
     * @access private
     */
     private $configBoleto = array();
+
+
+    /**
+    * Login da pessoa que irá receber o valor, caso não envie para o dono da API
+    * @var string
+    * @access private
+    */
+    private $contaPrincipal = '';
+
+    /**
+    * Outras contas que irão receber também parte do pagamento
+    * @var array
+    * @access private
+    */
+    private $contasSecundarias = array();
+
+    /** Receber secundário deve receber um valor fixo **/
+    const VALOR_FIXO = false;
+    /** Receber secundário deve receber um valor da porcentagem **/
+    const VALOR_PORCENTAGEM = true;
 
     /**
     * Array com o nome dos javascripts rodados no checkout getCheckoutTransparente
@@ -174,6 +194,36 @@ class MoipPagamento {
         $this->descricao = $descricao;
         return $this;
     }
+    
+    /**
+    * Seta o vendedor que irá receber a compra
+    * @param $login string
+    * @return MoipPagamento
+    * @since 1.1.0
+    */
+    public function setVendedor($login) {
+        $this->contaPrincipal = $login;
+        return $this;
+    }
+
+    /**
+    * Adiciona vendedores secundários que irão ganhar comissões.
+    * @param $login string (Login do segundo vendedor)
+    * @param $valor string (Valor que será dado ao vendedor)
+    * @param $forma FALSE = Valor fixo | TRUE = Porcentagem
+    * @param $taxaMoip TRUE = Paga taxa do MoIP | false = Não paga taxa do MoIP
+    * @return MoIPPagamento
+    * @since 1.1.0
+    */
+    public function addVendedorSecundario($login, $valor, $forma = false, $taxaMoip = false) {
+        $this->contasSecundarias[] = [
+            'login'     => $login,
+            'valor'     => $valor,
+            'forma'     => $forma,
+            'taxaMoip'  => $taxaMoip
+        ];
+        return $this;
+    }
 
     /**
     * Adiciona informações ao boleto
@@ -213,6 +263,18 @@ class MoipPagamento {
         $this->moip->setValue($this->precoTotal);
         $this->moip->setReason($this->descricao);
 
+        //Troca a pessoa que irá receber o pagamento
+        if (!empty($this->contaPrincipal)) 
+            $this->moip->setReceiver($this->contaPrincipal);
+
+        //Adiciona vendedores secundários
+        if (!empty($this->contasSecundarias)) {
+            $razao = 'Comissão da Venda [' . $this->descricao . ']';
+            foreach ($this->contasSecundarias as $conta)     
+                 $this->moip->addComission($razao, $conta['login'], $conta['valor'], $conta['forma'], $conta['taxaMoip']);
+        }
+
+        //Configuração de formas de pagamento
         foreach ($this->pagamentosDisponiveis as $forma) {
             switch($forma) {
                 case SELF::CHECKOUT_BOLETO: $this->moip->addPaymentWay('billet'); break;
@@ -221,16 +283,21 @@ class MoipPagamento {
             }
         }
 
+        //Configuração de Boleto
         if (!empty($this->configBoleto))
             $this->moip->setBilletConf($this->configBoleto['data'], true, $this->configBoleto['informacoes'], $this->configBoleto['logo']);
       
         $this->moip->validate('Basic');
         $this->moip->send();
 
-        if (is_object($this->moip->getAnswer()))
+        @$error = $this->moip->getAnswer()->error;
+        if (is_object($this->moip->getAnswer()) && empty($error)) 
             return $this->moip->getAnswer();
         
         $this->erro = $this->moip->getAnswer(); 
+        
+        if (!empty($error)) $this->erro = $error;
+
         return false;
         
     }

@@ -68,6 +68,15 @@ Caso seu projeto já possua um arquivo composer.json, você pode também adicion
 }
 ```
 
+### Atualização 1.1.0
+- Adicionado o MoIP Marketplace
+
+Permitir que uma venda seja direcionada a outra conta moip através do método:
+- setVendedor($login)
+
+Permitir adicionar outros vendedores a mesma venda, através do método:
+- addVendedorSecundario($login, $valorQueSeraDadoAEsseVendedor, $seEPorcentagem, $seSeraCobradoTaxaMoIP)
+
 # Usando a biblioteca
 ## Checkout no Ambiente MoIP
 ### Criando uma nova compra simples
@@ -102,9 +111,14 @@ A biblioteca para realizar a compra através do ambiente do MoIP possuio os segu
 | pagar()                      | ---                                                                                                        | Processa o pedido e gera o link para acessar o ambiente de compra do MoIP                                        | URL para o checkout no ambiente MoIP | SIM para compra no ambiente MoIP |
 | setCredenciais($token, $key) | $token (string) $key (string)                                                                              | Seta as credênciais do MoIP na classe, caso elas não tenham sido passadas no construtor.                         | PrópriaClasse MoipPagamento          | NÃO                              |
 | setSandbox($sandbox)         | $sandbox (boolean)                                                                                         | Informa se é para usar o ambiente sandbox (true) ou de produção (false), caso não informado no construtor.       | PrópriaClasse MoipPagamento          | NÃO                              |
+| setVendedor($login)                   | $login(string login ou email do vendedor principal)                                                                                               | Por padrão o vendedor principal é a conta vinculada a Token usado na API. Ao setar um vendedor, este vendedor é que receberá o dinheiro da venda e não mais o dono do token na API | Própria Classe MoipPagamento         | NÃO                              |
+| addVendedorSecundario($login, $valor, $forma = false, $taxaMoip = false)                   | $login (string com login ou senha do vendedor secundário)    $valor (Valor que o vendedor irá ganhar de comissão)    $forma (FALSE - Se o valor da comissão é um valor fixo ou TRUE caso o valor da comissão seja em porcentagem)    $taxaMoip (TRUE se o vendedor secundário també mvai pagar a taxa do MoIP ou FALSE caso ele não pague a taxa do MoIP)                                                                                               | Este método adiciona vendedores secundários que irão dividir o recebimento do valor da venda com o vendedor principal | Própria Classe MoipPagamento         | NÃO                              |
 | addFormaPagamento($forma)    | $forma:MoipPagamento::CHECKOUT_BOLETO \|\| MoipPagamento::CHECKOUT_CARTAO \|\| MoipPagamento::CHECKOUT_DEBITO_BANCARIO | Caso não informado, libera todas as formas de pagamento, caso informado libera apenas os modos informados                                                                                                                 | PrópriaClasse MoipPagamento                                     | Não                                 |
 |  configurarBoleto($data, $logo, $info)                            | $data (YYYY-MM-DD)  $logo (url para a logo ou null para não usar logo no boleto)  $info (array, onde cada valor do array é uma linha de informações no boleto)                                                                                                           | Adiciona informações extra ao boleto como data de expirar, uma logo própria ou informações extras                                                                                                                 | PrópriaClasse MoipPagamento                                     | NÃO                                |
 | getErro()                   | ---                                                                                               | Retorna mensagem de erro, caso não tenha sido possivel realizar a compra | string         | NÃO                              |
+
+
+
 
 ### Criando uma nova compra avançada
 
@@ -126,6 +140,10 @@ $urlPagamento = $moipPag->setID(uniqid())   //ID unico para a compra
                         ->configurarBoleto('2017-03-01', 'http://site.com.br/logo.png', array('Linha 1', 'Linha 2')) //Informações do boleto
                         ->addFormaPagamento(MoipPagamento::CHECKOUT_CARTAO) //Libera forma de pagamento via cartão
                         ->setDescricao('Descrição da Compra')
+                        ->setVendedor('carloswgama@gmail.com') //Adiciona quem deverá receber o apagamento ao invés da conta vinculada a API
+                        ->addVendedorSecundario('carloswgama2@gmail.com', 10) //Adiciona outro vendedor que irá receber 10 reais dessa venda
+                        ->addVendedorSecundario('carloswgama3@gmail.com', 10, TRUE) //Adiciona outro vendedor que irá receber 10% (5 reais) dessa venda
+                        
                         ->pagar();
 
 if (!$urlPagamento) die ($moipPag->getErro());
@@ -154,6 +172,9 @@ $scripts = $moipPag->setID(uniqid())   //ID unico para identificar a compra
                         ->setDescricao('Descrição da Compra')
                         ->addFormaPagamento(MoipPagamento::CHECKOUT_BOLETO) //Gera apenas scripts para o Boleto
 						->configurarBoleto('2017-03-01', 'http://site.com.br/logo.png', array('Linha 1', 'Linha 2')) 
+                        ->addVendedorSecundario('carloswgama2@gmail.com', 10) //Adiciona outro vendedor que irá receber 10 reais dessa venda
+                        ->addVendedorSecundario('carloswgama3@gmail.com', 10, TRUE) //Adiciona outro vendedor que irá receber 10% (5 reais) dessa venda
+                        
                         ->getCheckoutTransparente();
 
 ?>
