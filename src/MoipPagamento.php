@@ -89,6 +89,13 @@ class MoipPagamento {
     */
     private $contasSecundarias = array();
 
+    /**
+    * Comissão que será retirado dos vendedores secundários para o principal
+    * @var float
+    * @access private
+    */
+    private $comissaoVendedorPrincipal = 0;
+
     /** Receber secundário deve receber um valor fixo **/
     const VALOR_FIXO = false;
     /** Receber secundário deve receber um valor da porcentagem **/
@@ -176,6 +183,45 @@ class MoipPagamento {
     }
 
     /**
+    * Adiciona um produto a compra
+    * @param $produto string
+    * @param $valor float
+    * @param $login string
+    * @since 1.2.0
+    * @return MoipPagamento
+    */
+    public function addProduto($produto, $valor, $login = '') {
+
+        if (!empty($login)) {
+            $valor = (isset($this->contasSecundarias[$login]) ? $this->contasSecundarias[$login]['valor'] + $valor : $valor);
+            $razao = (isset($this->contasSecundarias[$login]) ? $this->contasSecundarias[$login]['razao'] .', '. $produto : $produto); 
+            $this->contasSecundarias[$login] = [
+                'razao'     => $razao,
+                'login'     => $login,
+                'valor'     => $valor,
+                'forma'     => false,
+                'taxaMoip'  => true
+            ];
+        }
+        $this->descricao = (empty($this->descricao) ? $produto : $this->descricao . ', ' . $produto); 
+        $this->precoTotal += $valor;
+        return $this->setPreco($this->precoTotal);
+    }
+
+    /**
+    * Adiciona a comissão do vendedor principal, reduzindo dos vendedores secundários
+    * @param $valor float
+    * @since 1.2.0
+    * @return MoipPagamento
+    */
+    public function setComissaoVendedorPrincipal($porcentagem) {
+        if ($porcentagem > 100) $porcentagem = 100;
+        elseif ($porcentagem < 0) $porcentagem = 0;
+        $this->comissaoVendedorPrincipal = $porcentagem;
+        return $this;
+    }
+
+    /**
     * Define o preço da compra
     * @param $precoTotal float
     * @return MoipPagamento
@@ -215,8 +261,9 @@ class MoipPagamento {
     * @return MoIPPagamento
     * @since 1.1.0
     */
-    public function addVendedorSecundario($login, $valor, $forma = false, $taxaMoip = false) {
+    public function addComissao($login, $valor, $forma = false, $taxaMoip = false) {
         $this->contasSecundarias[] = [
+            'razao'     => 'Comissão de Venda',
             'login'     => $login,
             'valor'     => $valor,
             'forma'     => $forma,
@@ -269,9 +316,13 @@ class MoipPagamento {
 
         //Adiciona vendedores secundários
         if (!empty($this->contasSecundarias)) {
-            $razao = 'Comissão da Venda [' . $this->descricao . ']';
-            foreach ($this->contasSecundarias as $conta)     
-                 $this->moip->addComission($razao, $conta['login'], $conta['valor'], $conta['forma'], $conta['taxaMoip']);
+            foreach ($this->contasSecundarias as $conta) {
+                //reduzir     
+                $comissaoVendedorPrincipal = ($conta['valor'] * $this->comissaoVendedorPrincipal) / 100;
+                $conta['valor'] -= $comissaoVendedorPrincipal;
+                $conta['valor'] = number_format($conta['valor'], 2, '.', '');
+                $this->moip->addComission($conta['razao'], $conta['login'], $conta['valor'], $conta['forma'], $conta['taxaMoip']);
+            }
         }
 
         //Configuração de formas de pagamento
